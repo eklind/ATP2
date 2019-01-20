@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import pandas as pd
 import numpy as np
+from datetime import datetime
 
 def compute_elo_rankings(data):
     """

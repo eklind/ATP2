@@ -120,6 +120,8 @@ def features_general_creation(outcome,match,past_matches):
                        int(rank_player_1>rank_player_2)]
     best_ranking_as_winner=past_matches[(past_matches.Winner==player1)].WRank.min()
     best_ranking_as_loser=past_matches[(past_matches.Loser==player1)].LRank.min()
+    #print(best_ranking_as_winner)
+    #print(best_ranking_as_loser)
     best_ranking=min(best_ranking_as_winner,best_ranking_as_loser)
     features_general.append(best_ranking)
     return features_general

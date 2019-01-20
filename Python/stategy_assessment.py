@@ -47,10 +47,11 @@ def assessStrategyGlobal(test_beginning_match,
     implied by the bookmaker (=1/odd).
     """
     ########## Training/validation/testing set generation
-    
+
+
     # Number of matches in our dataset (ie. nb. of outcomes divided by 2)
     nm=int(len(features)/2)
-    
+
     # Id of the first and last match of the testing,validation,training set
     beg_test=test_beginning_match
     end_test=min(test_beginning_match+duration_test_matches-1,nm-1)
@@ -93,7 +94,13 @@ def assessStrategyGlobal(test_beginning_match,
     
     ### ML model training
     model=xgbModelBinary(xtrain,ytrain,xval,yval,xgb_params,sample_weights=None)
-    
+    ## Save Model
+    model.save_model('xgb.model')
+    print("model saved")
+
+
+    #model = xgb.Booster(model_file='xgb.model')
+
     # The probability given by the model to each outcome of each match :
     pred_test= model.predict(xgb.DMatrix(xtest,label=None)) 
     # For each match, the winning probability the model gave to the players that won (should be high...) :
@@ -180,6 +187,7 @@ def profitComputation(percentage,confidence,model_name="0"):
     Input : percentage of matches we want to bet on,confidence dataset
     Output : ROI
     """
+    print("ProfitComputation")
     tot_number_matches=len(confidence)
     number_matches_we_bet_on=int(tot_number_matches*(percentage/100))
     matches_selection=confidence.head(number_matches_we_bet_on)
@@ -191,6 +199,7 @@ def plotProfits(confidence,title=""):
     Given a confidence dataset, plots the ROI according to the percentage of matches
     we bet on. 
     """
+    print("PlotProfit")
     profits=[]
     ticks=range(5,101)
     for i in ticks:
@@ -201,3 +210,4 @@ def plotProfits(confidence,title=""):
     plt.xlabel("% of matches we bet on")
     plt.ylabel("Return on investment (%)")
     plt.suptitle(title)
+    plt.show()

@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from datetime import datetime,timedelta
-
 from past_features import *
 from elo_features import *
 from categorical_features import *
 from stategy_assessment import *
+import matplotlib.pyplot as plt
 from utilities import *
 
 
@@ -19,10 +19,11 @@ from utilities import *
 # We consider only the odds of Bet365 and Pinnacle.
 
 import glob
-filenames=list(glob.glob("../Data/20*.xls*"))
-l = [pd.read_excel(filename,encoding='latin-1') for filename in filenames]
+filenames=list(glob.glob("../Data/20*.xls*")) # 20*
+l = [ pd.read_excel(filename,encoding='latin-1') for filename in filenames]
 no_b365=[i for i,d in enumerate(l) if "B365W" not in l[i].columns]
 no_pi=[i for i,d in enumerate(l) if "PSW" not in l[i].columns]
+
 for i in no_pi:
     l[i]["PSW"]=np.nan
     l[i]["PSL"]=np.nan
@@ -80,10 +81,10 @@ features_recent  = features_past_generation(features_recent_creation,150,"recent
 #dump(duo_features,"duo_features")
 #dump(general_features,"general_features")
 #dump(recent_features,"recent_features")
-features_player=load("player_features")
-features_duo=load("duo_features")
-features_general=load("general_features")
-features_recent=load("recent_features")
+#features_player=load("player_features")
+#features_duo=load("duo_features")
+#features_general=load("general_features")
+#features_recent=load("recent_features")
 
 ########################### Selection of our period ############################
 
@@ -148,12 +149,12 @@ features.to_csv("../Generated Data/atp_data_features.csv",index=False)
 ######################### Confidence computing for each match ############################
 features=pd.read_csv("../Generated Data/atp_data_features.csv")
 
-start_date=datetime(2013,1,1) #first day of testing set
+start_date=datetime(2013,1,1) #first day of testing set , 2013,1,1
 test_beginning_match=data[data.Date==start_date].index[0] #id of the first match of the testing set
 span_matches=len(data)-test_beginning_match+1
-duration_val_matches=300
-duration_train_matches=10400
-duration_test_matches=2000
+duration_val_matches=300 #300
+duration_train_matches=10400 #10400
+duration_test_matches=2000 # 2000
 
 ## Number of tournaments and players encoded directly in one-hot 
 nb_players=50
@@ -188,7 +189,7 @@ conf=conf.merge(dates,on="match")
 conf=conf.sort_values("confidence0",ascending=False)
 conf=conf.reset_index(drop=True)
 
-
+print("Main 191")
 ## We store this dataset
 conf.to_csv("../Generated Data/confidence_data.csv",index=False)
 
@@ -211,6 +212,7 @@ def profitsAlongTime(conf,matches_delta):
     milestones=np.array([conf.match.min()+matches_delta*i for i in range(N)])
     profits=[]
     lens=[]
+    print("profitsAlongTime")
     for i in range(N-1):
         beg=milestones[i]
         end=milestones[i+1]-1
@@ -227,13 +229,14 @@ def profitsAlongTime(conf,matches_delta):
 
 matches_delta=117
 profits,lens=profitsAlongTime(confconf,matches_delta)
-
+print("Main line 230")
 fig=plt.figure(figsize=(5.5,3))
 ax = fig.add_axes([0,0,1,0.9])  
 ax.plot(profits,linewidth=2,marker="o")
 plt.suptitle("Betting on sections of 100 matches")
 ax.set_xlabel("From 2013 to 2018")
 ax.set_ylabel("ROI")
+plt.show()
 
 fig=plt.figure(figsize=(5.5,3))
 ax = fig.add_axes([0,0,1,0.9])  
@@ -241,3 +244,5 @@ ax.plot(lens,linewidth=2,marker="o")
 plt.suptitle("Betting on sections of 100 matches")
 ax.set_xlabel("From 2013 to 2018")
 ax.set_ylabel("For each section, number of matches we bet on")
+plt.show()
+print("End of main")
